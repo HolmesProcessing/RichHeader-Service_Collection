@@ -47,7 +47,6 @@ def err2str(code):
         -7: "DanS signature not found. Rich header corrupt.",
         -8: "Wrong header padding behind DanS signature. Rich header corrupt.",
         -9: "Rich data length not a multiple of 8. Rich header corrupt.",
-
         }[code]
 
 class RichLibrary:
@@ -60,6 +59,21 @@ class RichLibrary:
 
     def __rol32(self, v, n):
         return ((v << (n & 0x1f)) & 0xffffffff) | (v >> (32 - (n & 0x1f)))
+
+    def generate_csum(self, raw_dat, compids, off):
+        csum = off
+
+        for i in range(off):
+            ## Mask out the e_lfanew field as it's not initialized yet
+            if i in range(0x3c, 0x40):
+                continue
+            csum += self.__rol32(raw_dat[i], i)
+
+        for c in compids:
+            csum += self.__rol32(c['pid'] << 16 | c['mcv'], c['cnt'])
+
+        ## Truncate calculated checksum to 32 bit
+        return csum & 0xffffffff
 
     def parse(self):
         dat = bytearray(open(self.fname, 'rb').read()[:0x1000])
@@ -113,27 +127,15 @@ class RichLibrary:
             raise RichLengthError()
 
         cmpids = []
-
-        ## Bonus feature: Calculate and check the check sum csum
-        chk = dans
-        for i in range(dans):
-            ## Mask out the e_lfanew field as it's not initialized yet
-            if i in range(0x3c, 0x40):
-                continue
-            chk += self.__rol32(dat[i], i)
-
         for i in range(0, len(upack), 2):
             cmpids.append({
                 'mcv': (upack[i + 0] >>  0) & 0xffff,
                 'pid': (upack[i + 0] >> 16) & 0xffff,
                 'cnt': (upack[i + 1] >>  0)
             })
-            ## Exclude the "generic file" descriptor from the check sum
-            #if cmpids[-1]['mcv'] & 0xffff != 0:
-            chk += self.__rol32(upack[i + 0], upack[i + 1])
 
-        ## Truncate calculated checksum to 32 bit
-        chk &= 0xffffffff
+        ## Bonus feature: Calculate and check the check sum csum
+        chk = self.generate_csum(dat, cmpids, dans)
 
         return {'error': 0, 'cmpids': cmpids, 'csum_calc': chk, 'csum_file': csum,
                 'offset': dans}
