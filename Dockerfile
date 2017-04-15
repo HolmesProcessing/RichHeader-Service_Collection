@@ -18,6 +18,6 @@ COPY prodids.py /service
 COPY richlibrary.py /service
 COPY rich.py /service
 
-CMD ["python3", "rich.py"]
+CMD ["python3", "rich_web.py"]
 
 EXPOSE 8080

@@ -23,12 +23,12 @@ The web version can be run as a local tornado server or through the included doc
             "cnt": "<str>",
         }
     ],
-    "compids_dup": <boolean>",
+    "compids_dup": "<boolean>",
     "csum_calc": "<int>",
     "csum_file": "<int>",
-    "csum_valid": <boolean>",
-    "error": <int>",
-    "offset": <int>",
+    "csum_valid": "<boolean>",
+    "error": "<int>",
+    "offset": "<int>",
 }
 ```
 
