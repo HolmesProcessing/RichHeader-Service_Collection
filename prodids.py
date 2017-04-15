@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
+## Version 0.3, by kirschju.re
+## Version History:
+##   0.1 Initial release
+##   0.2 Add original name database for product ids
+##   0.3 Add extra error checking during parsing
+
 int_names = {
-        0x0000: 'prodidUnknown',
+    0x0000: 'prodidUnknown',
 	0x0001: 'prodidImport0',
 	0x0002: 'prodidLinker510',
 	0x0003: 'prodidCvtomf510',

@@ -10,12 +10,6 @@ from os import path
 # imports for rich
 import richlibrary
 
-# imports for services
-from holmeslibrary.services import ServiceConfig 
-
-# Get service meta information and configuration
-Config = ServiceConfig("./service.conf")
-
 Metadata = {
     "Name"        : "Rich Header",
     "Version"     : "1.0",
@@ -39,18 +33,22 @@ class Service(tornado.web.RequestHandler):
             self.write(data)
         except tornado.web.MissingArgumentError:
             raise tornado.web.HTTPError(400)
-        except richlibrary.MZSignatureError:
+        except richlibrary.FileSizeError:
             self.write({'error': richlibrary.err2str(-2)})
-        except richlibrary.PESignatureError:
+        except richlibrary.MZSignatureError:
             self.write({'error': richlibrary.err2str(-3)})
-        except richlibrary.RichSignatureError:
+        except richlibrary.MZPointerError:
             self.write({'error': richlibrary.err2str(-4)})
-        except richlibrary.DanSSignatureError:
+        except richlibrary.PESignatureError:
             self.write({'error': richlibrary.err2str(-5)})
-        except richlibrary.PaddingError:
+        except richlibrary.RichSignatureError:
             self.write({'error': richlibrary.err2str(-6)})
-        except richlibrary.RichLengthError:
+        except richlibrary.DanSSignatureError:
             self.write({'error': richlibrary.err2str(-7)})
+        except richlibrary.HeaderPaddingError:
+            self.write({'error': richlibrary.err2str(-8)})
+        except richlibrary.RichLengthError:
+            self.write({'error': richlibrary.err2str(-9)})
         except Exception as e:
             self.write({"error": traceback.format_exc(e)})
 
@@ -62,8 +60,6 @@ class Info(tornado.web.RequestHandler):
             <p>{name:s} - {version:s}</p>
             <hr>
             <p>{description:s}</p>
-            <hr>
-            <p>{license:s}
         """.format(
             name        = str(Metadata["Name"]).replace("\n", "<br>"),
             version     = str(Metadata["Version"]).replace("\n", "<br>"),
@@ -96,8 +92,8 @@ class Application(tornado.web.Application):
 
 def main():
     server = tornado.httpserver.HTTPServer(Application())
-    server.listen(Config.settings.port)
-    tornado.ioloop.IOLoop.instance().start()
+    server.listen(8080)
+    tornado.ioloop.IOLoop.current().start()
 
 
 if __name__ == '__main__':

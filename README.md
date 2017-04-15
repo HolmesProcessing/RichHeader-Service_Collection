@@ -1,10 +1,20 @@
-# Rich Header service for Holmes-Totem
+# Rich Header
 
 ## Description
 
-The Rich Header service extracts the Rich Header from PE32 files. The resulting output is presented in JSON. 
+This is a collection of the work performed investigating the PE32 Rich Header.
 
-## Output
+## Standalone
+To execute the standalone version please execute the following:
+
+```
+python3 standalone.py <filename>
+```
+
+## Web Version
+The web version can be run as a local tornado server or through the included dockerfile.
+
+#### Output
 ```json
     "compids": [
         {
@@ -22,10 +32,27 @@ The Rich Header service extracts the Rich Header from PE32 files. The resulting 
 }
 ```
 
-## Usage
+#### Docker Usage
+Build and start the docker container using the following commands
 
-Build and start the docker container using the included Dockerfile. Since this container needs to have access to the sample file, you need to run this container with:
+```
+docker build -t richheader .
+sudo docker run --name rich_header -v /tmp:/tmp:ro -p 8080:8080 richheader
+```
 
-`-v /tmp:/tmp:ro`
+Place the files you wish to extract the Rich Header from in /tmp and access using 
+`http://127.0.0.1:8080/analyze/?obj=<file_name>`
 
-This allows the container to access /tmp on the local file system in read-only mode.
+To read about the service please see
+`http://127.0.0.1:8080/`
+
+## Acknowledgement
+This work was created with the blood sweat and tears of mamy people. 
+Thank you
+* Zachary Hanif
+* Julian Kirsch
+* Bojan Kolosnjaji
+* Christian von Pentz
+* Marcel Schumacher
+* George Webster
+* Huang Xiao
