@@ -5,17 +5,23 @@ import traceback
 
 # imports for rich
 import richlibrary
+import richfuncfinder
 
 def RichHeader(objpath):
     return richlibrary.RichLibrary(objpath)
 
+def RichFunctions(objpath, rich, signatures, threshold):
+    return richfuncfinder.RichFuncFinder(objpath, rich, signatures, threshold)
+
 def main():
     if len(sys.argv) < 2:
-        print("Usage: {} <pe-files>".format(sys.argv[0]))
+        print("Usage: {} <pe-files> <Signature Folder> <Signature Threshold>".format(sys.argv[0]))
         sys.exit(-1)
-    for arg in sys.argv[1:]:
+    #for arg in sys.argv[1:]:
+    else:
+        fname = sys.argv[1]
         error = 0
-        rich_parser = RichHeader(arg)
+        rich_parser = RichHeader(fname)
 
         try:
             rich = rich_parser.parse()
@@ -43,6 +49,18 @@ def main():
             sys.exit(rich['err'])
         else:
             rich_parser.pprint_header(rich)
+
+        if len(sys.argv) == 4:
+            signatures = sys.argv[2]
+            threshold = sys.argv[3]
+            func_parser = RichFunctions(fname, rich, signatures, threshold)
+
+            try:
+                func = func_parser.parse()
+                print(func['detected'])
+                ## TODO: func_parser.pprint_data(func)
+            except Exception as e:
+                print(traceback.format_exc(e))
 
 
 if __name__ == '__main__':
