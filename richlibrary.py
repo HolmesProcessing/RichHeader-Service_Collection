@@ -131,6 +131,7 @@ class RichLibrary:
             cmpids.append({
                 'mcv': (upack[i + 0] >>  0) & 0xffff,
                 'pid': (upack[i + 0] >> 16) & 0xffff,
+                'compid': upack[i + 0],
                 'cnt': (upack[i + 1] >>  0)
             })
 
@@ -142,7 +143,7 @@ class RichLibrary:
 
     def __pprint_cmpids(self, cmpids):
         print("-" * (20 + 16 + 16 + 32 + 39))
-        print("{:>20s}{:>16s}{:>16s}{:>32s}{:>39s}".format("Compiler Patchlevel", "Product ID",
+        print("{:>20s}{:>16s}{:>16s} {:>16s} {:>32s}{:>39s}".format("Compiler Patchlevel", "Product ID", "Lib Comp ID",
             "Count", "MS Internal Name", "Visual Studio Release"))
         print("-" * (20 + 16 + 16 + 32 + 39))
 
@@ -154,9 +155,10 @@ class RichLibrary:
                     int_name = '<unknown>'
                 vs_version = prodids.vs_version(e['pid'])
 
-            print("{:>20s}{:>16s}{:>16s}{:>32s}{:>39s}".format(
+            print("{:>20s}{:>16s}{:>16s}{:>16s}{:>32s}{:>39s}".format(
                 "{:5d}".format(e['mcv']),
                 "0x{:04x}".format(e['pid']),
+                "0x{0:02x}".format(e['compid']),
                 "0x{:08x}".format(e['cnt']),
                 "{}".format(int_name),
                 "{:18s} ({})".format(*vs_version)))
