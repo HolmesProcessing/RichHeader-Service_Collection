@@ -10,14 +10,13 @@ import richfuncfinder
 def RichHeader(objpath):
     return richlibrary.RichLibrary(objpath)
 
-def RichFunctions(objpath, rich, signatures, threshold):
-    return richfuncfinder.RichFuncFinder(objpath, rich, signatures, threshold)
+def RichFunctions(objpath, rich, nThreads):
+    return richfuncfinder.RichFuncFinder(objpath, rich, nThreads)
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: {} <pe-files> <Signature Folder> <Signature Threshold>".format(sys.argv[0]))
+        print("Usage: {} <pe-files> [<bool> (Run Std Lib Function Detection), <nThreads>]".format(sys.argv[0]))
         sys.exit(-1)
-    #for arg in sys.argv[1:]:
     else:
         fname = sys.argv[1]
         error = 0
@@ -45,23 +44,33 @@ def main():
             print(traceback.format_exc(e))
 
         if error < 0:
-            print("\x1b[33m[-] " + richlibrary.err2str(rich['err']) + "\x1b[39m")
-            sys.exit(rich['err'])
+            print("\x1b[33m[-] " + richlibrary.err2str(error) + "\x1b[39m")
+            sys.exit(error)
         else:
             rich_parser.pprint_header(rich)
 
         if len(sys.argv) == 4:
-            signatures = sys.argv[2]
-            threshold = sys.argv[3]
-            func_parser = RichFunctions(fname, rich, signatures, threshold)
+            if sys.argv[2]:
+                error = 0
+                func_parser = RichFunctions(fname, rich, int(sys.argv[3]))
+                print("Running Function Finder. Depending on CodeSection size this may take a while (minutes)...\n")
+                try:
+                    functions = func_parser.parse()
+                except richfuncfinder.MachineVersionError:
+                    error = -1
+                except richfuncfinder.NoMatchingSignatures:
+                    error = -2
+                except richfuncfinder.UnknownRelocationError:
+                    error = -3
+                except Exception as e:
+                    print(traceback.format_exc(e))
 
-            try:
-                func = func_parser.parse()
-                print(func['detected'])
-                ## TODO: func_parser.pprint_data(func)
-            except Exception as e:
-                print(traceback.format_exc(e))
-
+                if error < 0:
+                    print("\x1b[33m[-] " + richfuncfinder.err2str(error) + "\x1b[39m")
+                    sys.exit(error)
+                else:
+                    print("Found + Confirmed by Relocation: (For details check full results)")
+                    [print("%-65s @ 0x%x" % (func['name'], func['virtAddr'])) for func in functions['confirmed']]
 
 if __name__ == '__main__':
     main()
