@@ -8,7 +8,7 @@ This is a collection of the work performed investigating the PE32 Rich Header.
 To execute the standalone version please execute the following:
 
 ```
-python3 standalone.py <filename>
+python3 rich_standalone.py <filename> [<bool>, <nThreads> (to execute "RichFunctionFinder")] 
 ```
 
 ## Web Version
