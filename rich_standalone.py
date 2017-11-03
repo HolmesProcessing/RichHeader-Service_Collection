@@ -39,8 +39,8 @@ def main():
             print(traceback.format_exc(e))
 
         if error < 0:
-            print("\x1b[33m[-] " + richlibrary.err2str(rich['err']) + "\x1b[39m")
-            sys.exit(rich['err'])
+            print("\x1b[33m[-] " + richlibrary.err2str(error) + "\x1b[39m")
+            sys.exit(error)
         else:
             rich_parser.pprint_header(rich)
 
