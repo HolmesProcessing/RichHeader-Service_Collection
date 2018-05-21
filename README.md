@@ -17,7 +17,7 @@ The web version can be run as a local tornado server or through the included doc
 #### Output
 ```json
 {
-    "compids": [
+    "cmpids": [
         {
             "mcv": "<str>",
             "pid": "<str>",
