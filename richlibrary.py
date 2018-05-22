@@ -137,7 +137,7 @@ class RichLibrary:
         ## Bonus feature: Calculate and check the check sum csum
         chk = self.generate_csum(dat, cmpids, dans)
 
-        return {'error': 0, 'cmpids': cmpids, 'csum_calc': chk, 'csum_file': csum,
+        return {'error': 0, 'compids': cmpids, 'csum_calc': chk, 'csum_file': csum,
                 'offset': dans}
 
     def __pprint_cmpids(self, cmpids):
@@ -163,7 +163,7 @@ class RichLibrary:
         print("-" * (20 + 16 + 16 + 32 + 39))
 
     def pprint_header(self, data):
-        self.__pprint_cmpids(data['cmpids'])
+        self.__pprint_cmpids(data['compids'])
         if data['csum_calc'] == data['csum_file']:
             print("\x1b[32mChecksums match! (0x{:08x})".format(data['csum_calc']))
         else:
